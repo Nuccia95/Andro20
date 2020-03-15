@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WorkActivity">
+
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00FF0000"
+        android:clipToPadding="false"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="-337dp">
+
+        <TableRow android:background="#9472DFA0">
+
+            <TextView
+                android:id="@+id/steps"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Steps"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/kilometers"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Kilometers"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/cal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Cal"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"></TextView>
+        </TableRow>
+
+        <TableRow android:background="#9472DFA0">
+
+            <TextView
+                android:id="@+id/steps_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Steps"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/kilometers_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Km"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/cal_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Cal"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold"></TextView>
+        </TableRow>
+
+    </TableLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

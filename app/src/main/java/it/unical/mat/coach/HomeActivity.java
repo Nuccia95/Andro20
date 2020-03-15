@@ -39,6 +39,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,36 +48,46 @@ public class HomeActivity extends AppCompatActivity {
 
     private TextView home_msg;
     private Button sign_out_button;
+    private Button start_work_button;
     /* UserLocation */
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
     private Button fetch;
-    private TextView user_location_msg;
+    private TextView location_msg;
     private String city;
     private String country;
     private FusedLocationProviderClient mFusedLocationClient;
     /* Weather */
     private Weather weather;
     private String content;
+    private TextView temperature_msg;
     private static final String WEATHER_KEY = "270542b4b246f260340f8626b61a1188";
     private WeatherStatus weatherStatus;
-    private TextView temperature_msg;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        /* findViewByIds */
         sign_out_button = findViewById(R.id.sign_out_button);
+        start_work_button = findViewById(R.id.start_work_button);
         fetch = findViewById(R.id.fetch);
         home_msg = findViewById(R.id.home_msg);
-        user_location_msg = findViewById(R.id.user_location);
-        temperature_msg = findViewById(R.id.temperature);
+        location_msg = findViewById(R.id.location_msg);
+        temperature_msg = findViewById(R.id.temperature_msg);
 
         home_msg.setText("Ciao " + getIntent().getStringExtra("name") + "!");
         sign_out_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signOut();
+            }
+        });
+        start_work_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startWork();
             }
         });
 
@@ -147,7 +159,7 @@ public class HomeActivity extends AppCompatActivity {
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                // Logic to handle location object
+                                //Pass lat e lon to geocoder in order to get the current location
                                 double lat = location.getLatitude();
                                 double lon = location.getLongitude();
                                 Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.getDefault());
@@ -159,9 +171,14 @@ public class HomeActivity extends AppCompatActivity {
                                 }
                                     String info = addresses.get(0).getAddressLine(0);
                                     String info_location [] = info.split(",");
+
                                     city = info_location[1];
+                                    String city_split [] = city.split(" ");
+
+                                    city = city_split[2] + ", " + city_split[3];
                                     country = info_location[2];
-                                    user_location_msg.setText("LOCATION\n latitude: "+ lat + " longitude: " + lon + "\ncity: "+ city + " country: " + country);
+
+                                    location_msg.setText("LOCATION\n latitude: "+ lat + " longitude: " + lon + "\ncity: "+ city + " country: " + country);
                                 try{
                                     String url = "https://openweathermap.org/data/2.5/weather?lat="+ String.valueOf(lat) +"&lon=" + String.valueOf(lon) + "&appid=b6907d289e10d714a6e88b30761fae22";
                                     content = weather.execute(url).get();
@@ -203,11 +220,19 @@ public class HomeActivity extends AppCompatActivity {
                     "\ntemperature: " + weatherStatus.getTemperature() + " humidity: " + weatherStatus.getHumidity() + " icon: " +
                     weatherStatus.getIcon());
 
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    protected void startWork(){
+        Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
+        long startTime = Calendar.getInstance().getTime().getTime();
+        intent.putExtra("startTime", startTime);
+        startActivity(intent);
+        finish();
+    }
 
     class Weather extends AsyncTask <String, Void, String>{
         @Override
