@@ -1,4 +1,4 @@
-package it.unical.mat.coach;
+package it.unical.mat.coach.data;
 
 public class WeatherStatus {
 
@@ -9,11 +9,15 @@ public class WeatherStatus {
     private String humidity;
 
     public WeatherStatus(){
-        this.main = "";
-        this.description = "";
-        this.temperature = "";
-        this.icon = "";
-        this.humidity = "";
+
+    }
+
+    public WeatherStatus(String main, String description, String temperature, String icon, String humidity) {
+        this.main = main;
+        this.description = description;
+        this.temperature = temperature;
+        this.icon = icon;
+        this.humidity = humidity;
     }
 
     public String getMain() {

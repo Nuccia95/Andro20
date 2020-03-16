@@ -66,7 +66,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         long startTime = getIntent().getLongExtra("startTime", 0);
         long currentTime = Calendar.getInstance().getTime().getTime();
 
-        int duration = (int)(currentTime - startTime) / 1000; //seconds
+        int duration = (int)(currentTime - startTime) / 3600; //seconds
 
         if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
             currentSteps ++;
@@ -82,7 +82,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
             int weight = 55;
             cal = MET * weight * duration;
             cal = (int) cal;
-            calView.setText(String.format("%d", cal));
+            calView.setText(String.format("%s", cal));
         }
     }
 
