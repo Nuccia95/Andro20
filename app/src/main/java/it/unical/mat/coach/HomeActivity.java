@@ -5,7 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import it.unical.mat.coach.data.WeatherStatus;
+import it.unical.mat.coach.data.User;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -29,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,41 +46,53 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class HomeActivity extends AppCompatActivity {
 
     private TextView home_msg;
     private Button sign_out_button;
-    private Button start_work_button;
+    private ImageButton start_work_button;
+    private ImageButton profile_button;
     /* UserLocation */
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
     private Button fetch;
-    private TextView location_msg;
     private String city;
-    private String country;
+    private TextView cityView;
+    private TextView weatherView;
+    private TextView humidityView;
+    private TextView degreeView;
+    private ImageView weatherImageView;
+
     private FusedLocationProviderClient mFusedLocationClient;
     /* Weather */
     private Weather weather;
     private String content;
-    private TextView temperature_msg;
     private static final String WEATHER_KEY = "270542b4b246f260340f8626b61a1188";
-    private WeatherStatus weatherStatus;
-
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        user = (User) getIntent().getSerializableExtra("user");
+        weather = new Weather();
+
         /* findViewByIds */
         sign_out_button = findViewById(R.id.sign_out_button);
-        start_work_button = findViewById(R.id.start_work_button);
-        fetch = findViewById(R.id.fetch);
+        start_work_button = findViewById(R.id.startButton);
         home_msg = findViewById(R.id.home_msg);
-        location_msg = findViewById(R.id.location_msg);
-        temperature_msg = findViewById(R.id.temperature_msg);
+        cityView = findViewById(R.id.city);
+        weatherView = findViewById(R.id.weatherdescription);
+        humidityView = findViewById(R.id.humidity);
+        degreeView = findViewById(R.id.degree);
+        weatherImageView = findViewById(R.id.weatherpic);
 
-        home_msg.setText("Ciao " + getIntent().getStringExtra("name") + "!");
+        profile_button = findViewById(R.id.profileButton);
+        home_msg.setText("Ciao " + user.getFirstName() + "!");
+
+        /* buttons */
         sign_out_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,17 +105,15 @@ public class HomeActivity extends AppCompatActivity {
                 startWork();
             }
         });
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        fetch.setOnClickListener(new View.OnClickListener() {
+        profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                fetchLocation();
+            public void onClick(View v) {
+                goToProfile();
             }
         });
 
-        weather = new Weather();
-        weatherStatus = new WeatherStatus();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fetchLocation();
     }
 
     private void signOut(){
@@ -117,11 +130,17 @@ public class HomeActivity extends AppCompatActivity {
                 });
     }
 
+    private void goToProfile(){
+        Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
+        finish();
+    }
+
     private void fetchLocation() {
         if (ContextCompat.checkSelfPermission(HomeActivity.this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             // Permission is not granted
             if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -169,21 +188,19 @@ public class HomeActivity extends AppCompatActivity {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                    //Get city data
                                     String info = addresses.get(0).getAddressLine(0);
                                     String info_location [] = info.split(",");
-
                                     city = info_location[1];
                                     String city_split [] = city.split(" ");
+                                    city = city_split[2] + ", " + city_split[3] + info_location[2];
 
-                                    city = city_split[2] + ", " + city_split[3];
-                                    country = info_location[2];
+                                    cityView.setText(city);
 
-                                    location_msg.setText("LOCATION\n latitude: "+ lat + " longitude: " + lon + "\ncity: "+ city + " country: " + country);
                                 try{
                                     String url = "https://openweathermap.org/data/2.5/weather?lat="+ String.valueOf(lat) +"&lon=" + String.valueOf(lon) + "&appid=b6907d289e10d714a6e88b30761fae22";
                                     content = weather.execute(url).get();
                                     //content is a json
-                                    Log.i("contentData",content);
                                     JSONObject jsonObject = new JSONObject(content);
                                     updateWeatherStatus(jsonObject);
 
@@ -200,27 +217,31 @@ public class HomeActivity extends AppCompatActivity {
         //weatherData is an array
         String weatherData = "";
         String mainData = "";
+        String iconCode = "";
         try {
             weatherData = jsonObject.getString("weather");
             mainData = jsonObject.getString("main");
             JSONArray weatherArray = new JSONArray(weatherData);
 
             for(int i = 0; i<weatherArray.length(); i++){
+                //Set weatherView
                 JSONObject weatherPart = weatherArray.getJSONObject(i);
-                weatherStatus.setMain(weatherPart.getString("main"));
-                weatherStatus.setDescription(weatherPart.getString("description"));
-                weatherStatus.setIcon(weatherPart.getString("icon") + ".png");
+                String weatherDescription = weatherPart.getString("main") + ", " + weatherPart.getString("description");
+                weatherView.setText(weatherDescription);
+                //icon
+                iconCode = weatherPart.getString("icon");
             }
 
-            JSONObject mainPart = new JSONObject(mainData);
-            weatherStatus.setTemperature(mainPart.getString("temp") + "°C");
-            weatherStatus.setHumidity(mainPart.getString("humidity") + "%");
+                //Set imageWeatherView
+                Log.i("ICONCODE: ", iconCode);
+                String iconUrl = "http://openweathermap.org/img/wn/"+iconCode+".png";
+                Picasso.get().load(iconUrl).into(weatherImageView);
 
-            temperature_msg.setText("TEMPERATURE\n" + "main: " + weatherStatus.getMain() + " description: " + weatherStatus.getDescription() +
-                    "\ntemperature: " + weatherStatus.getTemperature() + " humidity: " + weatherStatus.getHumidity() + " icon: " +
-                    weatherStatus.getIcon());
-
-
+                JSONObject mainPart = new JSONObject(mainData);
+                String degree = mainPart.getString("temp") + "°C";
+                String humidity = "humidity: "+ mainPart.getString("humidity") + "%";
+                degreeView.setText(degree);
+                humidityView.setText(humidity);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -257,7 +278,6 @@ public class HomeActivity extends AppCompatActivity {
                     content = content + ch;
                     data = isr.read();
                 }
-                Log.i("Content",content);
                 return content;
 
             } catch (MalformedURLException e) {

@@ -4,24 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".WorkActivity">
 
 
     <TableLayout
         android:id="@+id/tableLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#00FF0000"
+        android:layout_width="384dp"
+        android:layout_height="79dp"
         android:clipToPadding="false"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        tools:layout_editor_absoluteX="-16dp"
-        tools:layout_editor_absoluteY="-337dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TableRow android:background="#9472DFA0">
+        <TableRow android:background="#72070707">
 
             <TextView
                 android:id="@+id/steps"
@@ -30,6 +31,7 @@
                 android:layout_weight="1"
                 android:text="Steps"
                 android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"></TextView>
 
@@ -40,6 +42,7 @@
                 android:layout_weight="1"
                 android:text="Kilometers"
                 android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"></TextView>
 
@@ -50,11 +53,12 @@
                 android:layout_weight="1"
                 android:text="Cal"
                 android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold"></TextView>
         </TableRow>
 
-        <TableRow android:background="#9472DFA0">
+        <TableRow android:background="#72070707">
 
             <TextView
                 android:id="@+id/steps_title"
@@ -63,6 +67,7 @@
                 android:layout_weight="1"
                 android:text="Steps"
                 android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"></TextView>
 
@@ -73,6 +78,7 @@
                 android:layout_weight="1"
                 android:text="Km"
                 android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"></TextView>
 
@@ -83,11 +89,43 @@
                 android:layout_weight="1"
                 android:text="Cal"
                 android:textAlignment="center"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"></TextView>
+
         </TableRow>
 
     </TableLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="260dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout">
+
+        <Chronometer
+            android:id="@+id/simpleChronometer"
+            android:layout_width="148dp"
+            android:layout_height="146dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/circle"
+            android:backgroundTint="#72070707"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="36sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.422" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,19 +1,24 @@
 package it.unical.mat.coach.data;
 
-public class User {
+import java.io.Serializable;
+import java.util.List;
+
+public class User implements Serializable {
 
     private String firstName;
     private String lastName;
     private String email;
+    private List<Workout> workouts;
 
     public User(){
 
     }
 
-    public User(String firstName, String lastName, String email) {
+    public User(String firstName, String lastName, String email, List<Workout> workouts) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.workouts = workouts;
     }
 
     public String getFirstName() {
@@ -38,5 +43,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Workout> getWorkouts() {
+        return workouts;
+    }
+
+    public void setWorkouts(List<Workout> workouts) {
+        this.workouts = workouts;
     }
 }

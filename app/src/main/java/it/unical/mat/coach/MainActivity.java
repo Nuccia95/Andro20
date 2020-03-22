@@ -3,6 +3,7 @@ package it.unical.mat.coach;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import it.unical.mat.coach.data.User;
+import it.unical.mat.coach.data.Workout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,26 +93,41 @@ public class MainActivity extends AppCompatActivity {
             user.setLastName(account.getDisplayName().split(" ")[1]);
 
             String email = user.getEmail().split("@")[0];
+            Date date = Calendar.getInstance().getTime();
+            Workout workout1 = new Workout(1, 10, date);
+            Workout workout2 = new Workout(2, 20, date);
+            Workout workout3 = new Workout(3.5f, 30, date);
+            Workout workout4 = new Workout(5, 40, date);
+            Workout workout5 = new Workout(5.6f, 50, date);
+            Workout workout6 = new Workout(6.2f, 60, date);
+            Workout workout7 = new Workout(7.2f, 60, date);
+            List<Workout> workouts = new ArrayList<>();
+            workouts.add(workout1);
+            workouts.add(workout2);
+            workouts.add(workout3);
+            workouts.add(workout4);
+            workouts.add(workout5);
+            workouts.add(workout6);
+            workouts.add(workout7);
+
+            user.setWorkouts(workouts);
+            //save
             dbUsers.child(email).setValue(user);
 
             dbUsers.child(email).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User u = dataSnapshot.getValue(User.class);
-                    Log.i("USER SAVED", u.getFirstName());
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
                 }
             });
 
             Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-            intent.putExtra("name", account.getDisplayName());
+            intent.putExtra("user", user);
             startActivity(intent);
             finish();
-            // go to another activity
         } catch (ApiException e) {
             Log.w("error failed code ", e.getCause());
         }

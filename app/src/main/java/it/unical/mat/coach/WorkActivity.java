@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.widget.Chronometer;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -18,6 +19,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     private TextView stepsView;
     private TextView kmView;
     private TextView calView;
+    Chronometer chronometer;
 
     private long currentSteps;
     private static final int averageStepMan = 78; //cm possiamo capire se l'utente è maschio o femmina
@@ -38,6 +40,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         stepsView = findViewById(R.id.steps);
         kmView = findViewById(R.id.kilometers);
         calView = findViewById(R.id.cal);
+        chronometer = (Chronometer) findViewById(R.id.simpleChronometer);
 
         stepsView.setText("0");
         kmView.setText("0,00");
@@ -61,6 +64,8 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        chronometer.start();
+        //chronometer.stop();
         Sensor sensor = event.sensor;
         float[] values = event.values;
         long startTime = getIntent().getLongExtra("startTime", 0);
