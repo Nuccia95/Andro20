@@ -9,7 +9,7 @@
 
 
     <TableLayout
-        android:id="@+id/tableLayout"
+        android:id="@+id/info_workout"
         android:layout_width="384dp"
         android:layout_height="79dp"
         android:clipToPadding="false"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TableRow android:background="#72070707">
+        <TableRow android:background="@color/colorBackground">
 
             <TextView
                 android:id="@+id/steps"
@@ -58,10 +58,10 @@
                 android:textStyle="bold"></TextView>
         </TableRow>
 
-        <TableRow android:background="#72070707">
+        <TableRow android:background="@color/colorBackground">
 
             <TextView
-                android:id="@+id/steps_title"
+                android:id="@+id/steps_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -72,7 +72,7 @@
                 android:textStyle="bold"></TextView>
 
             <TextView
-                android:id="@+id/kilometers_title"
+                android:id="@+id/kilometers_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -83,7 +83,7 @@
                 android:textStyle="bold"></TextView>
 
             <TextView
-                android:id="@+id/cal_title"
+                android:id="@+id/cal_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -98,13 +98,14 @@
     </TableLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/chronometer"
         android:layout_width="260dp"
         android:layout_height="150dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayout">
+        app:layout_constraintTop_toBottomOf="@+id/info_workout">
 
         <Chronometer
             android:id="@+id/simpleChronometer"
@@ -112,7 +113,7 @@
             android:layout_height="146dp"
             android:layout_centerHorizontal="true"
             android:background="@drawable/circle"
-            android:backgroundTint="#72070707"
+            android:backgroundTint="@color/colorBackground"
             android:gravity="center"
             android:padding="10dp"
             android:textAlignment="center"
@@ -124,8 +125,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.422" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#72070707"
+        app:itemIconTint="@drawable/item_selected"
+        app:itemTextColor="@drawable/item_selected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

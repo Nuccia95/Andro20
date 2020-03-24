@@ -17,9 +17,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,6 +29,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -46,74 +45,71 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 public class HomeActivity extends AppCompatActivity {
 
+    BottomNavigationView bottomNavigationView;
     private TextView home_msg;
-    private Button sign_out_button;
-    private ImageButton start_work_button;
-    private ImageButton profile_button;
-    /* UserLocation */
+    /* userLocation */
+    private User user;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
-    private Button fetch;
     private String city;
     private TextView cityView;
+    /* weather */
     private TextView weatherView;
     private TextView humidityView;
     private TextView degreeView;
     private ImageView weatherImageView;
-
     private FusedLocationProviderClient mFusedLocationClient;
-    /* Weather */
     private Weather weather;
     private String content;
     private static final String WEATHER_KEY = "270542b4b246f260340f8626b61a1188";
-    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        /* menu */
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView.setSelectedItemId(R.id.home_navigation);
+        handleMenu();
 
         user = (User) getIntent().getSerializableExtra("user");
-        weather = new Weather();
-
-        /* findViewByIds */
-        sign_out_button = findViewById(R.id.sign_out_button);
-        start_work_button = findViewById(R.id.startButton);
         home_msg = findViewById(R.id.home_msg);
         cityView = findViewById(R.id.city);
-        weatherView = findViewById(R.id.weatherdescription);
+        weather = new Weather();
+        weatherView = findViewById(R.id.weather_description);
         humidityView = findViewById(R.id.humidity);
         degreeView = findViewById(R.id.degree);
         weatherImageView = findViewById(R.id.weatherpic);
-
-        profile_button = findViewById(R.id.profileButton);
-        home_msg.setText("Ciao " + user.getFirstName() + "!");
-
-        /* buttons */
-        sign_out_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-            }
-        });
-        start_work_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startWork();
-            }
-        });
-        profile_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToProfile();
-            }
-        });
+        home_msg.setText("Hello " + user.getFirstName() + "!");
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLocation();
+    }
+
+    private void handleMenu(){
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.home_navigation:
+                        break;
+                    case R.id.profile_navigation:
+                        goToProfile();
+                        break;
+                    case R.id.work_navigation:
+                        goToWork();
+                        break;
+                    case R.id.exit_navigation:
+                        signOut();
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     private void signOut(){
@@ -134,7 +130,13 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
-        finish();
+    }
+
+    protected void goToWork(){
+        Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
+        long startTime = Calendar.getInstance().getTime().getTime();
+        intent.putExtra("startTime", startTime);
+        startActivity(intent);
     }
 
     private void fetchLocation() {
@@ -194,9 +196,7 @@ public class HomeActivity extends AppCompatActivity {
                                     city = info_location[1];
                                     String city_split [] = city.split(" ");
                                     city = city_split[2] + ", " + city_split[3] + info_location[2];
-
                                     cityView.setText(city);
-
                                 try{
                                     String url = "https://openweathermap.org/data/2.5/weather?lat="+ String.valueOf(lat) +"&lon=" + String.valueOf(lon) + "&appid=b6907d289e10d714a6e88b30761fae22";
                                     content = weather.execute(url).get();
@@ -224,16 +224,12 @@ public class HomeActivity extends AppCompatActivity {
             JSONArray weatherArray = new JSONArray(weatherData);
 
             for(int i = 0; i<weatherArray.length(); i++){
-                //Set weatherView
                 JSONObject weatherPart = weatherArray.getJSONObject(i);
                 String weatherDescription = weatherPart.getString("main") + ", " + weatherPart.getString("description");
                 weatherView.setText(weatherDescription);
-                //icon
                 iconCode = weatherPart.getString("icon");
             }
-
-                //Set imageWeatherView
-                Log.i("ICONCODE: ", iconCode);
+                /* set weather icon */
                 String iconUrl = "http://openweathermap.org/img/wn/"+iconCode+".png";
                 Picasso.get().load(iconUrl).into(weatherImageView);
 
@@ -242,34 +238,27 @@ public class HomeActivity extends AppCompatActivity {
                 String humidity = "humidity: "+ mainPart.getString("humidity") + "%";
                 degreeView.setText(degree);
                 humidityView.setText(humidity);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    protected void startWork(){
-        Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
-        long startTime = Calendar.getInstance().getTime().getTime();
-        intent.putExtra("startTime", startTime);
-        startActivity(intent);
-        finish();
-    }
-
     class Weather extends AsyncTask <String, Void, String>{
         @Override
         protected String doInBackground(String... address) {
-            //String... means multiple address can be send. It acts as array
+            /* String... means multiple address can be send. It acts as array */
             try {
                 URL url = new URL(address[0]);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 //Establish connection with address
                 connection.connect();
 
-                //retrieve data from url
+                /* retrieve data from url */
                 InputStream is = connection.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
 
-                //Retrieve data and return it as String
+                /* Retrieve data and return it as String */
                 int data = isr.read();
                 String content = "";
                 char ch;

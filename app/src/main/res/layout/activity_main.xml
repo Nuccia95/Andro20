@@ -9,10 +9,11 @@
 
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/logo"
         android:layout_width="221dp"
         android:layout_height="200dp"
         android:layout_marginTop="100dp"
+        android:contentDescription="@android:string/fingerprint_icon_content_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,19 +28,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/coach"
         app:layout_constraintVertical_bias="0.933">
 
     </com.google.android.gms.common.SignInButton>
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/coach"
         android:layout_width="246dp"
         android:layout_height="70dp"
+        android:contentDescription="@android:string/fingerprint_icon_content_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
         app:srcCompat="@drawable/coach" />
 
 
