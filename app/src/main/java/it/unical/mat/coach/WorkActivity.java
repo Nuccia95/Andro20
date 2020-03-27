@@ -2,6 +2,8 @@ package it.unical.mat.coach;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import it.unical.mat.coach.data.Database;
+import it.unical.mat.coach.data.User;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
@@ -22,6 +25,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
 
@@ -32,13 +38,15 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     private TextView stepsView;
     private TextView kmView;
     private TextView calView;
-    Chronometer chronometer;
+    private Chronometer chronometer;
+    private User user;
+
+    /* workout data */
     private long currentSteps;
-    private static final int averageStepMan = 78; //cm possiamo capire se l'utente è maschio o femmina
-    private static final int averageStepWoman = 70;
-    private double MET = 4.3; //metabolic equivalent of task
+    private float stepLength;
     private float km;
-    private double cal;
+    private float cal;
+    private float MET = 4.3f; //metabolic equivalent of task
 
     private SensorManager sensorManager;
     private Sensor sensorSteps;
@@ -47,6 +55,19 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work);
+        String email = getIntent().getStringExtra("email");
+        Database.getDatabase().getReference("users").child(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                stepLength = (float) (user.getHeight() * 0.415);
+                Log.i("STEP LENGTH", String.valueOf(stepLength));
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
         /* menu */
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setSelectedItemId(R.id.home_navigation);
@@ -56,14 +77,10 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         kmView = findViewById(R.id.kilometers);
         calView = findViewById(R.id.cal);
         chronometer = (Chronometer) findViewById(R.id.simpleChronometer);
-        stepsView.setText("0");
-        kmView.setText("0,00");
-        calView.setText("0");
 
         /* sensors */
         sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         sensorSteps = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
-
     }
 
     private void handleMenu(){
@@ -132,7 +149,9 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         //chronometer.stop();
         Sensor sensor = event.sensor;
         float[] values = event.values;
+       /* quando premo start */
         long startTime = getIntent().getLongExtra("startTime", 0);
+
         long currentTime = Calendar.getInstance().getTime().getTime();
 
         int duration = (int)(currentTime - startTime) / 3600; //seconds
@@ -141,46 +160,38 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
             currentSteps ++;
             stepsView.setText(String.valueOf(currentSteps));
 
-            float currentKilometers = updateKilometersRun(currentSteps);
+            float currentKilometers = (currentSteps * stepLength) / 100000;
+            Log.i("CURRENT KILOMETERS", String.valueOf(currentKilometers));
+            kmView.setText(String.format("%.2f", km));
 
             long distance =  (long) currentKilometers * 1000;  //meters
             float speed = distance / duration; //m/s
-            updateMET(speed);
 
             //updateCal
-            int weight = 55;
-            cal = MET * weight * duration;
+            MET = updateMET(speed);
+            cal = MET * user.getWeight() * duration;
+            Log.i("CAL FLOAT:", String.valueOf(cal));
             cal = (int) cal;
+            Log.i("CAL INT:", String.valueOf(cal));
             calView.setText(String.format("%s", cal));
         }
     }
 
-    private void updateMET(float speed){
-        double currentMET = 10;
-        /*if(speed >= 1.1 && speed <= 1.6)
-            currentMET = 4.3;
+    private float updateMET(float speed){
+        Log.i("CURRENT SPEED: ", String.valueOf(speed));
+        float currentMET = 1;
+        if(speed >= 1.1 && speed <= 1.6)
+            currentMET = 4.3f;
         else if(speed >= 1.7 && speed <= 2)
-            currentMET = 5.6;
+            currentMET = 5.6f;
         else if(speed >= 2.1 && speed <= 2.3)
             currentMET = 7;
         else if(speed >= 2.4 && speed <= 2.7)
-            currentMET = 8.5;
+            currentMET = 8.5f;
         else if(speed > 2.7)
-            currentMET = 10;*/
-        MET = (currentMET + MET) /2;
+            currentMET = 10;
+        return (currentMET + MET) /2;
     }
-
-    private float updateKilometersRun(long steps){
-        boolean man = true;
-        if(man)
-            km = (float) steps * averageStepMan / (float) 100000;
-        else
-            km = (float) steps * averageStepWoman/ (float) 100000;
-
-        kmView.setText(String.format("%.2f", km));
-        return km;
-    }
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

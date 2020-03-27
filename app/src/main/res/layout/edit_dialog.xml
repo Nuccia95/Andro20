@@ -6,7 +6,8 @@
         android:id="@+id/edit_weight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Kilograms kg"
+        android:hint="Weight kg"
+        android:inputType="number"
         android:textAlignment="center" />
 
     <EditText
@@ -15,6 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/edit_weight"
         android:hint="Height cm"
+        android:inputType="number"
         android:textAlignment="center" />
 
     <EditText

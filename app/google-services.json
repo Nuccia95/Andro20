@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "725574087538",
+    "firebase_url": "https://coach-269011.firebaseio.com",
+    "project_id": "coach-269011",
+    "storage_bucket": "coach-269011.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725574087538:android:805fcc8c652daea9bb63eb",
+        "android_client_info": {
+          "package_name": "it.unical.mat.coach"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "725574087538-0979l8c397trdmffo4hikifmmsqq8qin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFetjH8w2F_p5usFOUEOTBOyI1NzQ8u1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "725574087538-0979l8c397trdmffo4hikifmmsqq8qin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

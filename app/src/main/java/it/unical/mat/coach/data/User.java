@@ -1,6 +1,7 @@
 package it.unical.mat.coach.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable {
@@ -9,7 +10,7 @@ public class User implements Serializable {
     private String lastName;
     private String email;
     private String gender;
-    private float weight;
+    private int weight;
     private int height;
     private List<Workout> workouts;
 
@@ -59,11 +60,11 @@ public class User implements Serializable {
         this.gender = gender;
     }
 
-    public float getWeight() {
+    public int getWeight() {
         return weight;
     }
 
-    public void setWeight(float weight) {
+    public void setWeight(int weight) {
         this.weight = weight;
     }
 
@@ -76,6 +77,8 @@ public class User implements Serializable {
     }
 
     public List<Workout> getWorkouts() {
+        if(workouts == null)
+            return  new ArrayList<Workout>();
         return workouts;
     }
 

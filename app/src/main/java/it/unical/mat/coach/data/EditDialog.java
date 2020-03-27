@@ -12,7 +12,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import it.unical.mat.coach.R;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class EditDialog extends AppCompatDialogFragment {
 
@@ -33,14 +32,14 @@ public class EditDialog extends AppCompatDialogFragment {
         editGender = view.findViewById(R.id.edit_gender);
 
         builder.setView(view)
-                .setTitle("Edit")
+                .setTitle("Edit Profile")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 })
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String weight = editWeight.getText().toString();

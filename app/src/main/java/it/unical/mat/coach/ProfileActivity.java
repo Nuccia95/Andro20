@@ -2,12 +2,15 @@ package it.unical.mat.coach;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.EditDialog;
 import it.unical.mat.coach.data.User;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -27,11 +30,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity implements EditDialog.EditDialogListener{
 
@@ -57,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         /* menu */
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setSelectedItemId(R.id.profile_navigation);
@@ -74,26 +83,23 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         weightView = findViewById(R.id.weight_number);
         heightView = findViewById(R.id.height_number);
         genderView = findViewById(R.id.gender_value);
-        /*Set user info
-        genderView.setText(user.getGender());
+        /* user info*/
         weightView.setText(String.valueOf(user.getWeight()));
-        heightView.setText(String.valueOf(user.getHeight()));*/
-
+        heightView.setText(String.valueOf(user.getHeight()));
+        genderView.setText(user.getGender());
         /* bar chart */
         barChart = findViewById(R.id.BarChart);
         getEntries();
         barDataSet = new BarDataSet(barEntries, "");
-
         barData = new BarData(barDataSet);
         barChart.setData(barData);
         barChart.getDescription().setText("Km and Date");
         barChart.getAxisRight().setDrawGridLines(false);
         barChart.getAxisLeft().setDrawGridLines(false);
         barChart.getXAxis().setDrawGridLines(false);
+        barChart.setTouchEnabled(false);
 
         barDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
-        barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(12f);
 
         XAxis x = barChart.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
@@ -154,8 +160,7 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
 
     protected void goToWork(){
         Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
-        long startTime = Calendar.getInstance().getTime().getTime();
-        intent.putExtra("startTime", startTime);
+        intent.putExtra("email", user.getEmail());
         startActivity(intent);
     }
 
@@ -171,10 +176,19 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
 
     @Override
     public void applyTexts(String weight, String height, String gender) {
-        //if(!= current user)..
-        weightView.setText(weight);
-        heightView.setText(height);
-        genderView.setText(gender);
-        //set also user.setHeight.. user.setweight..
+        if(!weight.matches("")){
+            weightView.setText(weight);
+            user.setWeight(Integer.parseInt(weight));
+        }
+        if(!height.matches("")){
+            heightView.setText(height);
+            user.setHeight(Integer.parseInt(height));
+        }
+        if(!gender.matches("") && (gender.equals("M") || gender.equals("F"))){
+            genderView.setText(gender);
+            user.setGender(gender);
+        }
+        Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
     }
+
 }

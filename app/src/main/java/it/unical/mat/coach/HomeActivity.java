@@ -42,7 +42,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -86,6 +85,12 @@ public class HomeActivity extends AppCompatActivity {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLocation();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        user = (User) getIntent().getSerializableExtra("user");
     }
 
     private void handleMenu(){
@@ -134,8 +139,7 @@ public class HomeActivity extends AppCompatActivity {
 
     protected void goToWork(){
         Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
-        long startTime = Calendar.getInstance().getTime().getTime();
-        intent.putExtra("startTime", startTime);
+        intent.putExtra("email", user.getEmail());
         startActivity(intent);
     }
 
@@ -253,11 +257,9 @@ public class HomeActivity extends AppCompatActivity {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 //Establish connection with address
                 connection.connect();
-
                 /* retrieve data from url */
                 InputStream is = connection.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
-
                 /* Retrieve data and return it as String */
                 int data = isr.read();
                 String content = "";
@@ -268,7 +270,6 @@ public class HomeActivity extends AppCompatActivity {
                     data = isr.read();
                 }
                 return content;
-
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
