@@ -81,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
         humidityView = findViewById(R.id.humidity);
         degreeView = findViewById(R.id.degree);
         weatherImageView = findViewById(R.id.weatherpic);
-        home_msg.setText("Hello " + user.getFirstName() + "!");
+        home_msg.setText("Hello " + user.getName() + "!");
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLocation();

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.User;
+import it.unical.mat.coach.data.Workout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,12 +13,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.SystemClock;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -29,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class WorkActivity extends AppCompatActivity implements SensorEventListener {
@@ -38,56 +42,104 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     private TextView stepsView;
     private TextView kmView;
     private TextView calView;
+    private TextView goalView;
+    private ImageButton startButton;
+    private ImageButton stopButton;
+
     private Chronometer chronometer;
+    private ProgressBar progressBar;
     private User user;
 
     /* workout data */
     private long currentSteps;
+    private float currentKilometers;
     private float stepLength;
-    private float km;
     private float cal;
     private float MET = 4.3f; //metabolic equivalent of task
+    private float goal;
 
     private SensorManager sensorManager;
     private Sensor sensorSteps;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work);
+        /* get current user */
         String email = getIntent().getStringExtra("email");
         Database.getDatabase().getReference("users").child(email).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
+                ArrayList<Workout> workouts = new ArrayList<>();
+                user.setWorkouts(workouts);
                 stepLength = (float) (user.getHeight() * 0.415);
-                Log.i("STEP LENGTH", String.valueOf(stepLength));
+                Database.getDatabase().getReference("users").child(user.getEmail()).child("workouts").addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                    Workout w = ds.getValue(Workout.class);
+                                    user.getWorkouts().add(w);
+                                }
+                                String goal_view = String.valueOf(getGoal()) + " Km";
+                                goalView.setText(goal_view);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
+                        }
+                );
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
         /* menu */
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setSelectedItemId(R.id.home_navigation);
         handleMenu();
-
+        /* workout */
+        chronometer = (Chronometer) findViewById(R.id.simpleChronometer);
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setProgress(0);
         stepsView = findViewById(R.id.steps);
         kmView = findViewById(R.id.kilometers);
         calView = findViewById(R.id.cal);
-        chronometer = (Chronometer) findViewById(R.id.simpleChronometer);
-
+        goalView = findViewById(R.id.goal_view);
+        startButton = findViewById(R.id.start_button);
+        stopButton = findViewById(R.id.stop_button);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startTime = Calendar.getInstance().getTimeInMillis();
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                chronometer.start();
+            }
+        });
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                chronometer.stop();
+                Workout workout = new Workout(currentKilometers, 0, Calendar.getInstance().getTime());
+                user.getWorkouts().add(workout);
+                Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
+                Toast.makeText(getApplicationContext(), "Workout Added", Toast.LENGTH_SHORT).show();
+                goToHome();
+            }
+        });
         /* sensors */
-        sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorSteps = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
     }
 
-    private void handleMenu(){
+    private void handleMenu() {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.home_navigation:
                         goToHome();
                         break;
@@ -107,7 +159,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
-    private void signOut(){
+    private void signOut() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         mGoogleSignInClient.signOut()
@@ -121,12 +173,12 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
                 });
     }
 
-    protected void goToProfile(){
+    protected void goToProfile() {
         Intent intent = new Intent(WorkActivity.this, ProfileActivity.class);
         startActivity(intent);
     }
 
-    protected void goToHome(){
+    protected void goToHome() {
         Intent intent = new Intent(WorkActivity.this, HomeActivity.class);
         startActivity(intent);
     }
@@ -145,52 +197,49 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        chronometer.start();
-        //chronometer.stop();
         Sensor sensor = event.sensor;
-        float[] values = event.values;
-       /* quando premo start */
-        long startTime = getIntent().getLongExtra("startTime", 0);
-
-        long currentTime = Calendar.getInstance().getTime().getTime();
-
-        int duration = (int)(currentTime - startTime) / 3600; //seconds
-
         if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            currentSteps ++;
+            long currentTime = Calendar.getInstance().getTimeInMillis();
+
+            int duration = (int) (currentTime - startTime) / 1000;
+            currentSteps++;
             stepsView.setText(String.valueOf(currentSteps));
 
-            float currentKilometers = (currentSteps * stepLength) / 100000;
-            Log.i("CURRENT KILOMETERS", String.valueOf(currentKilometers));
-            kmView.setText(String.format("%.2f", km));
+            currentKilometers = (currentSteps * stepLength) / 100000;
+            int progress = (int) (100 * currentKilometers / goal);
+            progressBar.setProgress(progress);
+            kmView.setText(String.format("%.2f", currentKilometers));
 
-            long distance =  (long) currentKilometers * 1000;  //meters
-            float speed = distance / duration; //m/s
+            int distance = (int) (currentKilometers * 1000);
+            float speed = distance / duration;
 
-            //updateCal
             MET = updateMET(speed);
-            cal = MET * user.getWeight() * duration;
-            Log.i("CAL FLOAT:", String.valueOf(cal));
-            cal = (int) cal;
-            Log.i("CAL INT:", String.valueOf(cal));
-            calView.setText(String.format("%s", cal));
+            cal = MET * user.getWeight() * (float) duration / 3600;
+            calView.setText(Integer.toString((int)cal));
         }
     }
 
-    private float updateMET(float speed){
-        Log.i("CURRENT SPEED: ", String.valueOf(speed));
+    private float updateMET(float speed) {
         float currentMET = 1;
-        if(speed >= 1.1 && speed <= 1.6)
+        if (speed >= 1.1 && speed <= 1.6)
             currentMET = 4.3f;
-        else if(speed >= 1.7 && speed <= 2)
+        else if (speed >= 1.7 && speed <= 2)
             currentMET = 5.6f;
-        else if(speed >= 2.1 && speed <= 2.3)
+        else if (speed >= 2.1 && speed <= 2.3)
             currentMET = 7;
-        else if(speed >= 2.4 && speed <= 2.7)
+        else if (speed >= 2.4 && speed <= 2.7)
             currentMET = 8.5f;
-        else if(speed > 2.7)
+        else if (speed > 2.7)
             currentMET = 10;
-        return (currentMET + MET) /2;
+        return currentMET;
+    }
+
+
+    private float getGoal(){
+        float lastKm = user.getWorkouts().get(user.getWorkouts().size() - 1).getKm();
+        float goal = ( lastKm <= 5 ? 5 : lastKm + 0.2f);
+        goal = (goal >= 15 ? 15 : goal);
+        return goal;
     }
 
     @Override

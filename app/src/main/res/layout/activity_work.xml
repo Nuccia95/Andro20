@@ -140,5 +140,117 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttons_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/chronometer"
+        tools:layout_editor_absoluteX="0dp">
+
+        <ImageButton
+            android:id="@+id/stop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="100dp"
+            android:backgroundTint="#00FFFFFF"
+            android:contentDescription="@android:string/fingerprint_icon_content_description"
+            android:tint="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_stop_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/start_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:backgroundTint="#00FFFFFF"
+            android:contentDescription="@android:string/fingerprint_icon_content_description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
+
+        <TextView
+            android:id="@+id/startView"
+            android:layout_width="61dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="100dp"
+            android:fontFamily="sans-serif"
+            android:text="Start"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/start_button" />
+
+        <TextView
+            android:id="@+id/stopView"
+            android:layout_width="60dp"
+            android:layout_height="29dp"
+            android:layout_marginEnd="100dp"
+            android:text="Stop"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/stop_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/card__progress"
+        android:layout_width="418dp"
+        android:layout_height="168dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttons_panel"
+        app:layout_constraintVertical_bias="1.0">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="355dp"
+            android:layout_height="17dp"
+            android:layout_marginBottom="24dp"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="10"
+            android:progressTint="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.507"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goal_view"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <ImageView
+            android:id="@+id/goal_image"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="44dp"
+            android:contentDescription="@android:string/fingerprint_icon_content_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/goal"
+            tools:layout_editor_absoluteY="56dp" />
+
+        <TextView
+            android:id="@+id/goal_view"
+            android:layout_width="94dp"
+            android:layout_height="19dp"
+            android:layout_marginEnd="44dp"
+            android:textAlignment="textEnd"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goal_image" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,12 +8,14 @@ import it.unical.mat.coach.data.User;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -35,6 +37,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -48,10 +51,12 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
     BottomNavigationView bottomNavigationView;
 
     /* User Info */
+    private TextView nameView;
     private TextView weightView;
     private TextView heightView;
     private TextView genderView;
     private ImageButton edit_button;
+    private ImageView picView;
     /* Bar chart */
     private BarChart barChart;
     private BarData barData;
@@ -59,9 +64,6 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
     private ArrayList barEntries;
     private ArrayList<String> labels;
     private User user;
-
-    public ProfileActivity() {
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,14 +81,19 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
             }
         });
 
+        /* user info*/
         user = (User) getIntent().getSerializableExtra("user");
+        nameView = findViewById(R.id.name_view);
         weightView = findViewById(R.id.weight_number);
         heightView = findViewById(R.id.height_number);
         genderView = findViewById(R.id.gender_value);
-        /* user info*/
+        picView = findViewById(R.id.profile_picture);
+        nameView.setText(String.valueOf(user.getName()));
         weightView.setText(String.valueOf(user.getWeight()));
         heightView.setText(String.valueOf(user.getHeight()));
         genderView.setText(user.getGender());
+        Picasso.get().load(user.getPic()).into(picView);
+
         /* bar chart */
         barChart = findViewById(R.id.BarChart);
         getEntries();
@@ -99,7 +106,8 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         barChart.getXAxis().setDrawGridLines(false);
         barChart.setTouchEnabled(false);
 
-        barDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+        //barDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+        barDataSet.setBarShadowColor(Color.argb(40, 150, 150, 150));
 
         XAxis x = barChart.getXAxis();
         x.setValueFormatter(new IndexAxisValueFormatter(labels));
@@ -135,9 +143,8 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
     private void getEntries() {
         labels = new ArrayList<>();
         barEntries = new ArrayList<>();
-        for (int i = 0; i < user.getWorkouts().size(); i++) {
+        for (int i = 1; i < user.getWorkouts().size(); i++) {
             barEntries.add(new BarEntry(i, user.getWorkouts().get(i).getKm()));
-
             DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
             String date = dateFormat.format(user.getWorkouts().get(i).getDate());
             labels.add(date);

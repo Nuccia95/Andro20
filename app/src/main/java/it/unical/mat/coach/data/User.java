@@ -1,47 +1,31 @@
 package it.unical.mat.coach.data;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class User implements Serializable {
 
-    private String firstName;
-    private String lastName;
+    private String name;
     private String email;
     private String gender;
     private int weight;
     private int height;
+    private String pic;
     private List<Workout> workouts;
 
     public User(){
 
     }
 
-    public User(String firstName, String lastName, String email, String gender, int weight, int height, List<Workout> workouts) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.gender = gender;
-        this.weight = weight;
-        this.height = height;
-        this.workouts = workouts;
+    public String getName() {
+        return name;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -74,6 +58,14 @@ public class User implements Serializable {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public String getPic() {
+        return pic;
+    }
+
+    public void setPic(String pic) {
+        this.pic = pic;
     }
 
     public List<Workout> getWorkouts() {

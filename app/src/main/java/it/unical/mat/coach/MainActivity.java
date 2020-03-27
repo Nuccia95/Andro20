@@ -1,7 +1,6 @@
 package it.unical.mat.coach;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.User;
@@ -19,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -87,9 +85,12 @@ public class MainActivity extends AppCompatActivity {
                     if(user == null){
                         user = new User();
                         user.setEmail(key);
-                        user.setFirstName(account.getDisplayName().split(" ")[0]);
-                        user.setLastName(account.getDisplayName().split(" ")[1]);
-                        user.setWorkouts(new ArrayList<Workout>());
+                        user.setName(account.getDisplayName());
+                        user.setPic(account.getPhotoUrl().toString());
+                        Workout workout = new Workout(0, 0, null);
+                        ArrayList<Workout> workouts = new ArrayList<>();
+                        workouts.add(workout);
+                        user.setWorkouts(workouts);
                         user.setWeight(0);
                         user.setHeight(0);
                         user.setGender(" ");
