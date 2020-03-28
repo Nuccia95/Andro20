@@ -50,7 +50,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -72,35 +72,37 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="20dp"
                 android:textColor="#FFFFFF"
-                android:textSize="30sp"
+                android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/weather_description"
-                app:layout_constraintVertical_bias="0.542" />
+                app:layout_constraintVertical_bias="0.542"
+                tools:text="10 °C" />
 
             <TextView
                 android:id="@+id/humidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="44dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="16dp"
                 android:paddingBottom="3sp"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/degree" />
+                app:layout_constraintStart_toEndOf="@+id/degree"
+                tools:text="humidity 80%" />
 
             <ImageView
                 android:id="@+id/weatherpic"
-                android:layout_width="87dp"
-                android:layout_height="91dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="16dp"
                 android:contentDescription="@android:string/fingerprint_icon_content_description"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.866"
-                app:layout_constraintStart_toEndOf="@+id/city"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.257" />
+                app:layout_constraintVertical_bias="0.31" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -116,6 +118,29 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/map_layout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/home_msg">
+
+        <fragment
+            android:id="@+id/google_map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

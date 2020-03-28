@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Coach</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="weather_api_key" translatable="false">b6907d289e10d714a6e88b30761fae22</string>
 
-    <string name="radio_male">M</string>
-    <string name="radio_female">F</string>
 </resources>
