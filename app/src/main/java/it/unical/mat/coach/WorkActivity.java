@@ -83,7 +83,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
                                     Workout w = ds.getValue(Workout.class);
                                     user.getWorkouts().add(w);
                                 }
-                                String goal_view = String.valueOf(getGoal()) + " Km";
+                                String goal_view = String.format("%.2f", getGoal()) + " Km";
                                 goalView.setText(goal_view);
                             }
                             @Override
@@ -175,6 +175,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     protected void goToProfile() {
         Intent intent = new Intent(WorkActivity.this, ProfileActivity.class);
+        intent.putExtra("user", user);
         startActivity(intent);
     }
 

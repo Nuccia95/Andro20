@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.EditDialog;
 import it.unical.mat.coach.data.User;
+import it.unical.mat.coach.data.Workout;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -88,32 +89,14 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         heightView = findViewById(R.id.height_number);
         genderView = findViewById(R.id.gender_value);
         picView = findViewById(R.id.profile_picture);
-        nameView.setText(String.valueOf(user.getName()));
+        if(user.getPic() != null)
+            Picasso.get().load(user.getPic()).into(picView);
+        nameView.setText(user.getName());
         weightView.setText(String.valueOf(user.getWeight()));
         heightView.setText(String.valueOf(user.getHeight()));
         genderView.setText(user.getGender());
-        Picasso.get().load(user.getPic()).into(picView);
-
-        /* bar chart */
         barChart = findViewById(R.id.BarChart);
-        getEntries();
-        barDataSet = new BarDataSet(barEntries, "");
-        barData = new BarData(barDataSet);
-        barChart.setData(barData);
-        barChart.getDescription().setText("Km and Date");
-        barChart.getAxisRight().setDrawGridLines(false);
-        barChart.getAxisLeft().setDrawGridLines(false);
-        barChart.getXAxis().setDrawGridLines(false);
-        barChart.setTouchEnabled(false);
-
-        //barDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
-        barDataSet.setBarShadowColor(Color.argb(40, 150, 150, 150));
-
-        XAxis x = barChart.getXAxis();
-        x.setValueFormatter(new IndexAxisValueFormatter(labels));
-        x.setGranularity(1f);
-        x.setPosition(XAxis.XAxisPosition.BOTTOM);
-        x.setLabelRotationAngle(-45);
+        setBarChart();
     }
 
     private void handleMenu(){
@@ -140,12 +123,39 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         });
     }
 
+    private void setBarChart(){
+        getEntries();
+        barDataSet = new BarDataSet(barEntries, "");
+        barDataSet.setColors(Color.WHITE);
+        barData = new BarData(barDataSet);
+        barData.setValueTextColor(Color.TRANSPARENT);
+        barData.setBarWidth(0.3f);
+        barChart.setData(barData);
+        barChart.getDescription().setText(" ");
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.setTouchEnabled(false);
+        barChart.getAxisLeft().setTextColor(Color.WHITE);
+        barChart.getAxisRight().setTextColor(Color.TRANSPARENT);
+        barChart.getXAxis().setTextColor(Color.WHITE);
+        barChart.getLegend().setEnabled(false);
+        barChart.animateXY(2000, 2500);
+
+        XAxis x = barChart.getXAxis();
+        x.setLabelCount(labels.size());
+        x.setValueFormatter(new IndexAxisValueFormatter(labels));
+        x.setGranularity(0.5f);
+        x.setPosition(XAxis.XAxisPosition.BOTTOM);
+    }
+
     private void getEntries() {
         labels = new ArrayList<>();
         barEntries = new ArrayList<>();
-        for (int i = 1; i < user.getWorkouts().size(); i++) {
+        user.getWorkouts().remove(0);
+        for (int i = 0; i < user.getWorkouts().size(); i++) {
             barEntries.add(new BarEntry(i, user.getWorkouts().get(i).getKm()));
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM");
             String date = dateFormat.format(user.getWorkouts().get(i).getDate());
             labels.add(date);
         }
@@ -169,11 +179,13 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
         intent.putExtra("email", user.getEmail());
         startActivity(intent);
+        finish();
     }
 
     protected void goToHome(){
         Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void openDialog() {

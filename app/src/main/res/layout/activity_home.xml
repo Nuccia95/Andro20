@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,18 +11,17 @@
         android:id="@+id/home_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
-        android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weather" />
+        app:layout_constraintTop_toBottomOf="@+id/weather"
+        tools:text="Nuccia Oliverio" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/weather"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="182dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,8 +32,6 @@
             android:layout_width="326dp"
             android:layout_height="153dp"
             android:background="@color/colorBackground"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
@@ -48,60 +44,61 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="30dp"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
+                android:textColorHighlight="#FFFFFF"
+                android:textColorLink="#FFFFFF"
+                android:textSize="22sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="88842 Cutro, KR Italy" />
 
             <TextView
                 android:id="@+id/weather_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="4dp"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/city" />
+                app:layout_constraintTop_toBottomOf="@+id/city"
+                tools:text="Clouds, broken clouds" />
 
             <TextView
                 android:id="@+id/degree"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/weather_description"
-                app:layout_constraintVertical_bias="0.542"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weatherpic"
                 tools:text="10 °C" />
 
             <TextView
                 android:id="@+id/humidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginStart="16dp"
                 android:paddingBottom="3sp"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/degree"
-                tools:text="humidity 80%" />
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weather_description"
+                tools:text="Humidity 80%" />
 
             <ImageView
                 android:id="@+id/weatherpic"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="20dp"
                 android:contentDescription="@android:string/fingerprint_icon_content_description"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.31" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

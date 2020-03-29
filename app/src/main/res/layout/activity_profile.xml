@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profile_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="162dp"
         android:background="@color/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -20,60 +20,62 @@
 
         <ImageView
             android:id="@+id/profile_picture"
-            android:layout_width="160dp"
-            android:layout_height="127dp"
-            android:layout_marginTop="12dp"
+            android:layout_width="140dp"
+            android:layout_height="111dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="10dp"
-            android:src="@drawable/avatar"
+            android:src="@drawable/logo"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/name_view"
-            android:layout_width="159dp"
-            android:layout_height="37dp"
-            android:layout_marginTop="8dp"
-            android:paddingLeft="10dp"
-            android:text="Bobo"
+            android:layout_width="140dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="20dp"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold|italic"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/info_card"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
+            app:layout_constraintTop_toBottomOf="@+id/profile_picture"
+            tools:text="Nuccia Oliverio" />
 
         <ImageButton
             android:id="@+id/edit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
             android:background="#00FFFFFF"
             android:tint="#00FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.075"
+            app:layout_constraintVertical_bias="0.115"
             app:srcCompat="@drawable/edit" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/info_card"
-            android:layout_width="164dp"
-            android:layout_height="128dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.314"
+            app:layout_constraintEnd_toStartOf="@+id/edit_button"
+            app:layout_constraintHorizontal_bias="0.182"
             app:layout_constraintStart_toEndOf="@+id/profile_picture"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.509">
+            app:layout_constraintVertical_bias="0.146">
 
             <TextView
                 android:id="@+id/weight_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:text="Weight:"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
@@ -84,12 +86,13 @@
                 android:id="@+id/weight_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginStart="5dp"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.073"
                 app:layout_constraintStart_toEndOf="@+id/weight_view"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="30" />
 
             <TextView
                 android:id="@+id/height_view"
@@ -107,13 +110,14 @@
                 android:id="@+id/height_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="16dp"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.031"
                 app:layout_constraintStart_toEndOf="@+id/height_view"
-                app:layout_constraintTop_toBottomOf="@+id/weight_number" />
+                app:layout_constraintTop_toBottomOf="@+id/weight_number"
+                tools:text="160" />
 
             <TextView
                 android:id="@+id/gender_view"
@@ -131,12 +135,14 @@
                 android:id="@+id/gender_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="16dp"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.092"
                 app:layout_constraintStart_toEndOf="@+id/gender_view"
-                app:layout_constraintTop_toBottomOf="@+id/height_number" />
+                app:layout_constraintTop_toBottomOf="@+id/height_number"
+                tools:text="Fe" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -154,8 +160,11 @@
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/BarChart"
-            android:layout_width="309dp"
-            android:layout_height="343dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.482"
             app:layout_constraintStart_toStartOf="parent"

@@ -202,7 +202,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/card__progress"
-        android:layout_width="418dp"
+        android:layout_width="match_parent"
         android:layout_height="168dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
@@ -215,42 +215,40 @@
         <ProgressBar
             android:id="@+id/progress_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="355dp"
-            android:layout_height="17dp"
-            android:layout_marginBottom="24dp"
+            android:layout_width="250dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="30dp"
             android:indeterminate="false"
             android:max="100"
             android:progress="10"
             android:progressTint="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.507"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/goal_view"
-            app:layout_constraintVertical_bias="1.0" />
-
-        <ImageView
-            android:id="@+id/goal_image"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="44dp"
-            android:contentDescription="@android:string/fingerprint_icon_content_description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/goal"
-            tools:layout_editor_absoluteY="56dp" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/goal_view"
-            android:layout_width="94dp"
-            android:layout_height="19dp"
-            android:layout_marginEnd="44dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="30dp"
             android:textAlignment="textEnd"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/goal_image" />
+            tools:text="5 km" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/goal_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_flag_black_24dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

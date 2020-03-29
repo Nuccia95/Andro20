@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,14 +87,23 @@ public class MainActivity extends AppCompatActivity {
                         user = new User();
                         user.setEmail(key);
                         user.setName(account.getDisplayName());
-                        user.setPic(account.getPhotoUrl().toString());
+                        user.setWeight(50);
+                        user.setHeight(160);
+                        user.setGender("M");
+                        if(account.getPhotoUrl() != null)
+                            user.setPic(account.getPhotoUrl().toString());
                         Workout workout = new Workout(0, 0, null);
+                        Workout workout1 = new Workout(2, 5, Calendar.getInstance().getTime());
+                        Workout workout2 = new Workout(3, 5, Calendar.getInstance().getTime());
+                        Workout workout3 = new Workout(5, 5, Calendar.getInstance().getTime());
+                        Workout workout4 = new Workout(5.2f, 5, Calendar.getInstance().getTime());
                         ArrayList<Workout> workouts = new ArrayList<>();
                         workouts.add(workout);
+                        workouts.add(workout1);
+                        workouts.add(workout2);
+                        workouts.add(workout3);
+                        workouts.add(workout4);
                         user.setWorkouts(workouts);
-                        user.setWeight(0);
-                        user.setHeight(0);
-                        user.setGender(" ");
                         usersReference.child(key).setValue(user);
                     }
                     Intent intent = new Intent(MainActivity.this, HomeActivity.class);

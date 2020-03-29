@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.User;
+import it.unical.mat.coach.data.Workout;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -38,6 +40,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -50,6 +55,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -98,7 +104,34 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        user = (User) getIntent().getSerializableExtra("user");
+        Log.i("onresume", "ON RESUME CALLED");
+        Database.getDatabase().getReference("users").child(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                ArrayList<Workout> workouts = new ArrayList<>();
+                user.setWorkouts(workouts);
+                Database.getDatabase().getReference("users").child(user.getEmail()).child("workouts").addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                    Workout w = ds.getValue(Workout.class);
+                                    user.getWorkouts().add(w);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
+                        }
+                );
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void handleMenu() {
@@ -142,6 +175,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     private void goToProfile() {
         Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
         intent.putExtra("user", user);
+        Log.i("worksize", ""+user.getWorkouts().size());
         startActivity(intent);
     }
 
@@ -150,78 +184,6 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra("email", user.getEmail());
         startActivity(intent);
     }
-
-    /*private void fetchLocation() {
-        if (ContextCompat.checkSelfPermission(HomeActivity.this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-                new AlertDialog.Builder(this)
-                        .setTitle("Required UserLocation Permission")
-                        .setMessage("You have to give this permission to acess this feature")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                ActivityCompat.requestPermissions(HomeActivity.this,
-                                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-                            }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).create().show();
-            } else {
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(HomeActivity.this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-            }
-        } else {
-            // Permission has already been granted
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                //Pass lat e lon to geocoder in order to get the current location
-                                double lat = location.getLatitude();
-                                double lon = location.getLongitude();
-                                Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.getDefault());
-                                List<Address> addresses = null;
-                                try {
-                                    addresses = geocoder.getFromLocation(lat, lon, 1);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                //Get city data
-                                String info = addresses.get(0).getAddressLine(0);
-                                String info_location[] = info.split(",");
-                                city = info_location[1];
-                                String city_split[] = city.split(" ");
-                                city = city_split[2] + ", " + city_split[3] + info_location[2];
-                                cityView.setText(city);
-                                try {
-                                    String url = "https://openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat) + "&lon=" + String.valueOf(lon) + "&appid=b6907d289e10d714a6e88b30761fae22";
-                                    content = weather.execute(url).get();
-                                    //content is a json
-                                    JSONObject jsonObject = new JSONObject(content);
-                                    updateWeatherStatus(jsonObject);
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-        }
-    }
-    */
 
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -249,7 +211,10 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
                     //Get city data
                     String info = addresses.get(0).getAddressLine(0);
                     String info_location[] = info.split(", ");
-                    city = info_location[info_location.length - 2] + ", " + info_location[info_location.length - 1];
+                    if(info_location[info_location.length - 2] != null && info_location[info_location.length - 1] != null)
+                        city = info_location[info_location.length - 2] + ", " + info_location[info_location.length - 1];
+                    else
+                        city = "";
                     cityView.setText(city);
 
                     try {
