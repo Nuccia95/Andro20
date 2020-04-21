@@ -235,7 +235,6 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         return currentMET;
     }
 
-
     private float getGoal(){
         float lastKm = user.getWorkouts().get(user.getWorkouts().size() - 1).getKm();
         float goal = ( lastKm <= 5 ? 5 : lastKm + 0.2f);

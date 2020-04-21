@@ -104,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
                         workouts.add(workout3);
                         workouts.add(workout4);
                         user.setWorkouts(workouts);
+                        ArrayList<Integer> workoutDays = new ArrayList<>();
+                        workoutDays.add(0);
+                        workoutDays.add(3);
+                        user.setWorkoutDays(workoutDays);
                         usersReference.child(key).setValue(user);
                     }
                     Intent intent = new Intent(MainActivity.this, HomeActivity.class);

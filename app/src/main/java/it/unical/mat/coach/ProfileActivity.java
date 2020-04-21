@@ -3,16 +3,13 @@ package it.unical.mat.coach;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import it.unical.mat.coach.data.Database;
+import it.unical.mat.coach.data.DaysDialog;
 import it.unical.mat.coach.data.EditDialog;
 import it.unical.mat.coach.data.User;
-import it.unical.mat.coach.data.Workout;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -21,44 +18,36 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EventListener;
 
-public class ProfileActivity extends AppCompatActivity implements EditDialog.EditDialogListener{
+public class ProfileActivity extends AppCompatActivity implements EditDialog.EditDialogListener, DaysDialog.EditDialogListener{
 
     BottomNavigationView bottomNavigationView;
 
-    /* User Info */
+    /* user info */
     private TextView nameView;
     private TextView weightView;
     private TextView heightView;
     private TextView genderView;
     private ImageButton edit_button;
+    private ImageButton days_button;
     private ImageView picView;
-    /* Bar chart */
+    /* bar chart */
     private BarChart barChart;
     private BarData barData;
     private BarDataSet barDataSet;
@@ -78,7 +67,15 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDialog();
+                openEditDialog();
+            }
+        });
+
+        days_button = findViewById(R.id.days_button);
+        days_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openWorkoutDaysDialog();
             }
         });
 
@@ -188,10 +185,16 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         finish();
     }
 
-    public void openDialog() {
+    public void openEditDialog() {
         EditDialog editDialog = new EditDialog();
         editDialog.show(getSupportFragmentManager(), "edit dialog");
     }
+
+    public void openWorkoutDaysDialog(){
+        DaysDialog daysDialog = new DaysDialog();
+        daysDialog.show(getSupportFragmentManager(), "workout days dialog");
+    }
+
 
     @Override
     public void applyTexts(String weight, String height, String gender) {
@@ -207,6 +210,18 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
             genderView.setText(gender);
             user.setGender(gender);
         }
+        Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
+    }
+
+    @Override
+    public  void setDays(boolean[] checkedDays){
+        user.setWorkoutDays(new ArrayList<Integer>());
+        if(checkedDays!=null)
+            for(int i=0; i<checkedDays.length; i++){
+                    if(checkedDays[i])
+                        user.getWorkoutDays().add(i+2);
+            }
+
         Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
     }
 

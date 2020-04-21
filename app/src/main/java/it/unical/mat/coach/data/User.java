@@ -15,6 +15,7 @@ public class User implements Serializable {
     private int height;
     private String pic;
     private List<Workout> workouts;
+    private List<Integer> workoutDays;
 
     public User(){
 
@@ -76,5 +77,13 @@ public class User implements Serializable {
 
     public void setWorkouts(List<Workout> workouts) {
         this.workouts = workouts;
+    }
+
+    public List<Integer> getWorkoutDays() {
+        return workoutDays;
+    }
+
+    public void setWorkoutDays(List<Integer> workoutDays) {
+        this.workoutDays = workoutDays;
     }
 }

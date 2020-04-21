@@ -53,11 +53,22 @@
             android:layout_marginEnd="20dp"
             android:background="#00FFFFFF"
             android:tint="#00FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.115"
             app:srcCompat="@drawable/edit" />
+
+        <ImageButton
+            android:id="@+id/days_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="86dp"
+            android:background="#00FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_button"
+            app:srcCompat="@drawable/ic_date_range_black_24dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/info_card"
@@ -142,7 +153,7 @@
                 app:layout_constraintHorizontal_bias="0.092"
                 app:layout_constraintStart_toEndOf="@+id/gender_view"
                 app:layout_constraintTop_toBottomOf="@+id/height_number"
-                tools:text="Fe" />
+                tools:text="F" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

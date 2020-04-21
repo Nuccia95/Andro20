@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">Coach</string>
-    <string name="weather_api_key" translatable="false">b6907d289e10d714a6e88b30761fae22</string>
+
+    <string-array name="days">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
 
 </resources>
