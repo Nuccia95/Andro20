@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -109,7 +110,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         degreeView = findViewById(R.id.degree);
         parksButton = findViewById(R.id.parks_button);
         weatherImageView = findViewById(R.id.weatherpic);
-        home_msg.setText("Hello " + user.getName() + "!");
+        home_msg.setText("Hi " + user.getName() + "!");
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLocation();
@@ -300,6 +301,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
                 DataTransfer[1] = url;
                 GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
                 getNearbyPlacesData.execute(DataTransfer);
+                Toast.makeText(getApplicationContext(),"Nearby Parks", Toast.LENGTH_SHORT).show();
             }
         });
     }

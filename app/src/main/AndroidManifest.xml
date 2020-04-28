@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_api_key"/>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".ProfileActivity"/>
         <activity android:name=".WorkActivity"

@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -90,13 +91,18 @@ public class MainActivity extends AppCompatActivity {
                         user.setWeight(50);
                         user.setHeight(160);
                         user.setGender("M");
+                        Date d1 = new Date(2020, 4, 3);
+                        Date d2 = new Date(2020, 4, 5);
+                        Date d3 = new Date(2020, 4, 7);
+                        Date d4 = new Date(2020, 4, 9);
+                        Date d5 = new Date(2020, 4, 11);
                         if(account.getPhotoUrl() != null)
                             user.setPic(account.getPhotoUrl().toString());
                         Workout workout = new Workout(0, 0, null);
-                        Workout workout1 = new Workout(2, 5, Calendar.getInstance().getTime());
-                        Workout workout2 = new Workout(3, 5, Calendar.getInstance().getTime());
-                        Workout workout3 = new Workout(5, 5, Calendar.getInstance().getTime());
-                        Workout workout4 = new Workout(5.2f, 5, Calendar.getInstance().getTime());
+                        Workout workout1 = new Workout(2, 5, d1);
+                        Workout workout2 = new Workout(3, 5, d2);
+                        Workout workout3 = new Workout(5, 5, d3);
+                        Workout workout4 = new Workout(5.2f, 5, d4);
                         ArrayList<Workout> workouts = new ArrayList<>();
                         workouts.add(workout);
                         workouts.add(workout1);

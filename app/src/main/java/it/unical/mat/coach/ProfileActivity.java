@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -128,7 +129,7 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         barData.setValueTextColor(Color.TRANSPARENT);
         barData.setBarWidth(0.3f);
         barChart.setData(barData);
-        barChart.getDescription().setText(" ");
+        barChart.getDescription().setText("Km and Date");
         barChart.getAxisRight().setDrawGridLines(false);
         barChart.getAxisLeft().setDrawGridLines(false);
         barChart.getXAxis().setDrawGridLines(false);
@@ -211,6 +212,7 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
             user.setGender(gender);
         }
         Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
+        Toast.makeText(getApplicationContext(),"Info Updated", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -218,11 +220,35 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         user.setWorkoutDays(new ArrayList<Integer>());
         if(checkedDays!=null)
             for(int i=0; i<checkedDays.length; i++){
-                    if(checkedDays[i])
-                        user.getWorkoutDays().add(i+2);
+                    if(checkedDays[i]){
+                        switch (i){
+                            case 0:
+                                user.getWorkoutDays().add(2);
+                                break;
+                            case 1:
+                                user.getWorkoutDays().add(3);
+                                break;
+                            case 2:
+                                user.getWorkoutDays().add(4);
+                                break;
+                            case 3:
+                                user.getWorkoutDays().add(5);
+                                break;
+                            case 4:
+                                user.getWorkoutDays().add(6);
+                                break;
+                            case 5:
+                                user.getWorkoutDays().add(7);
+                                break;
+                            case 6:
+                                user.getWorkoutDays().add(1);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
             }
-
         Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
+        Toast.makeText(getApplicationContext(),"Days Updated", Toast.LENGTH_SHORT).show();
     }
-
 }

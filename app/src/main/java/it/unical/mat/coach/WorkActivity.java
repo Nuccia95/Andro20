@@ -14,6 +14,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
@@ -51,6 +52,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     private User user;
 
     /* workout data */
+    private boolean startedWorkout;
     private long currentSteps;
     private float currentKilometers;
     private float stepLength;
@@ -96,11 +98,13 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+
         /* menu */
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setSelectedItemId(R.id.home_navigation);
         handleMenu();
         /* workout */
+        startedWorkout = false;
         chronometer = (Chronometer) findViewById(R.id.simpleChronometer);
         progressBar = findViewById(R.id.progress_bar);
         progressBar.setProgress(0);
@@ -113,6 +117,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startedWorkout = true;
                 startTime = Calendar.getInstance().getTimeInMillis();
                 chronometer.setBase(SystemClock.elapsedRealtime());
                 chronometer.start();
@@ -121,11 +126,15 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startedWorkout = false;
                 chronometer.setBase(SystemClock.elapsedRealtime());
                 chronometer.stop();
                 Workout workout = new Workout(currentKilometers, 0, Calendar.getInstance().getTime());
                 user.getWorkouts().add(workout);
                 Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
+                stepsView.setText("Steps");
+                calView.setText("Cal");
+                kmView.setText("Kilometers");
                 Toast.makeText(getApplicationContext(), "Workout Added", Toast.LENGTH_SHORT).show();
                 goToHome();
             }
@@ -198,25 +207,30 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Sensor sensor = event.sensor;
-        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            long currentTime = Calendar.getInstance().getTimeInMillis();
 
-            int duration = (int) (currentTime - startTime) / 1000;
-            currentSteps++;
-            stepsView.setText(String.valueOf(currentSteps));
+        if(startedWorkout) {
+            Sensor sensor = event.sensor;
+            if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+                long currentTime = Calendar.getInstance().getTimeInMillis();
 
-            currentKilometers = (currentSteps * stepLength) / 100000;
-            int progress = (int) (100 * currentKilometers / goal);
-            progressBar.setProgress(progress);
-            kmView.setText(String.format("%.2f", currentKilometers));
+                int duration = (int) (currentTime - startTime) / 1000;
+                currentSteps++;
+                stepsView.setText(String.valueOf(currentSteps));
 
-            int distance = (int) (currentKilometers * 1000);
-            float speed = distance / duration;
+                currentKilometers = (currentSteps * stepLength) / 100000;
+                int progress = (int) (100 * currentKilometers / goal);
+                Log.i("progress", String.valueOf(progress));
+                progressBar.setProgress(progress);
+                kmView.setText(String.format("%.2f", currentKilometers));
 
-            MET = updateMET(speed);
-            cal = MET * user.getWeight() * (float) duration / 3600;
-            calView.setText(Integer.toString((int)cal));
+                int distance = (int) (currentKilometers * 1000);
+                float speed = distance / duration;
+
+                MET = updateMET(speed);
+                cal = MET * user.getWeight() * (float) duration / 3600;
+                if(cal > 0)
+                    calView.setText(Integer.toString((int) cal));
+            }
         }
     }
 
@@ -244,6 +258,5 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 }
