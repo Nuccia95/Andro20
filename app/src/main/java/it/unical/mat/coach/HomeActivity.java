@@ -78,10 +78,12 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView weatherView;
     private TextView humidityView;
     private TextView degreeView;
+    private TextView suggestion;
     private ImageView weatherImageView;
     private Weather weather;
     /* location */
     private ImageButton parksButton;
+    private ImageButton gymButton;
     private FusedLocationProviderClient mFusedLocationClient;
     private String content;
     private GoogleMap gMap;
@@ -109,6 +111,8 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         humidityView = findViewById(R.id.humidity);
         degreeView = findViewById(R.id.degree);
         parksButton = findViewById(R.id.parks_button);
+        gymButton = findViewById(R.id.gym_button);
+        suggestion = findViewById(R.id.suggestion);
         weatherImageView = findViewById(R.id.weatherpic);
         home_msg.setText("Hi " + user.getName() + "!");
 
@@ -295,6 +299,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         parksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                gMap.clear();
                 String url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), "park");
                 Object[] DataTransfer = new Object[2];
                 DataTransfer[0] = gMap;
@@ -302,6 +307,20 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
                 GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
                 getNearbyPlacesData.execute(DataTransfer);
                 Toast.makeText(getApplicationContext(),"Nearby Parks", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        gymButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gMap.clear();
+                String url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), "gym");
+                Object[] DataTransfer = new Object[2];
+                DataTransfer[0] = gMap;
+                DataTransfer[1] = url;
+                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                getNearbyPlacesData.execute(DataTransfer);
+                Toast.makeText(getApplicationContext(),"Nearby Gyms", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -339,8 +358,10 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
 
             for (int i = 0; i < weatherArray.length(); i++) {
                 JSONObject weatherPart = weatherArray.getJSONObject(i);
+                String description = weatherPart.getString("description");
                 String weatherDescription = weatherPart.getString("main") + ", " + weatherPart.getString("description");
                 weatherView.setText(weatherDescription);
+                setSuggestion(description);
                 iconCode = weatherPart.getString("icon");
             }
             /* set weather icon */
@@ -356,6 +377,15 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public  void setSuggestion(String description){
+        Log.i("description", description);
+        if(description.equals("clear sky") || description.equals("few clouds") || description.equals("scattered clouds"))
+            suggestion.setText("According to the weather today\n is better to go to a park!");
+        else if(description.equals("shower rain") || description.equals("rain") || description.equals("thunderstorm") ||
+                description.equals("snow") || description.equals("mist"))
+            suggestion.setText("According to the weather today\n is better to go to the gym!");
     }
 
     class Weather extends AsyncTask<String, Void, String> {

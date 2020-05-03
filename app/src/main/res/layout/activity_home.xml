@@ -7,6 +7,22 @@
     android:background="@drawable/background"
     tools:context=".HomeActivity">
 
+    <TextView
+        android:id="@+id/suggestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="177dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="177dp"
+        android:fontFamily="@font/roboto"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weather_card" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layouts1"
         android:layout_width="match_parent"
@@ -48,8 +64,20 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#00FFFFFF"
             android:src="@drawable/ic_nature_people_black_24dp"
+            android:tint="#FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/gym_button"
+            android:layout_width="58dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/ic_fitness_center_black_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/parks_button" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -153,14 +181,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/map_container"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="230dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="25dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weather_card">
+        app:layout_constraintTop_toBottomOf="@+id/suggestion">
 
         <fragment
             android:id="@+id/google_map"

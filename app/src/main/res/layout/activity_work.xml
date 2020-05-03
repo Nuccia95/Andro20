@@ -231,7 +231,7 @@
             android:indeterminate="false"
             android:max="100"
             android:progress="10"
-            android:progressTint="#FFFFFF"
+            android:progressTint="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

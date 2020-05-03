@@ -151,12 +151,22 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         labels = new ArrayList<>();
         barEntries = new ArrayList<>();
         user.getWorkouts().remove(0);
-        for (int i = 0; i < user.getWorkouts().size(); i++) {
-            barEntries.add(new BarEntry(i, user.getWorkouts().get(i).getKm()));
-            DateFormat dateFormat = new SimpleDateFormat("dd-MM");
-            String date = dateFormat.format(user.getWorkouts().get(i).getDate());
-            labels.add(date);
-        }
+
+       if(user.getWorkouts().size() >= 5){
+            for (int i = user.getWorkouts().size() - 5; i < user.getWorkouts().size(); i++) {
+                barEntries.add(new BarEntry(i, user.getWorkouts().get(i).getKm()));
+                DateFormat dateFormat = new SimpleDateFormat("dd-MM");
+                String date = dateFormat.format(user.getWorkouts().get(i).getDate());
+                labels.add(date);
+            }
+        }else{
+           for (int i = 0; i < user.getWorkouts().size(); i++) {
+               barEntries.add(new BarEntry(i, user.getWorkouts().get(i).getKm()));
+               DateFormat dateFormat = new SimpleDateFormat("dd-MM");
+               String date = dateFormat.format(user.getWorkouts().get(i).getDate());
+               labels.add(date);
+           }
+       }
     }
 
     private void signOut(){

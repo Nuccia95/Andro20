@@ -99,12 +99,12 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        startedWorkout = false;
         /* menu */
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setSelectedItemId(R.id.home_navigation);
         handleMenu();
         /* workout */
-        startedWorkout = false;
         chronometer = (Chronometer) findViewById(R.id.simpleChronometer);
         progressBar = findViewById(R.id.progress_bar);
         progressBar.setProgress(0);
@@ -117,6 +117,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Workout Started", Toast.LENGTH_SHORT).show();
                 startedWorkout = true;
                 startTime = Calendar.getInstance().getTimeInMillis();
                 chronometer.setBase(SystemClock.elapsedRealtime());
@@ -126,6 +127,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Workout Added", Toast.LENGTH_SHORT).show();
                 startedWorkout = false;
                 chronometer.setBase(SystemClock.elapsedRealtime());
                 chronometer.stop();
@@ -135,6 +137,9 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
                 stepsView.setText("Steps");
                 calView.setText("Cal");
                 kmView.setText("Kilometers");
+                cal = 0;
+                currentKilometers = 0;
+                currentSteps = 0;
                 Toast.makeText(getApplicationContext(), "Workout Added", Toast.LENGTH_SHORT).show();
                 goToHome();
             }
@@ -207,35 +212,33 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         if(startedWorkout) {
             Sensor sensor = event.sensor;
             if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
                 long currentTime = Calendar.getInstance().getTimeInMillis();
 
-                int duration = (int) (currentTime - startTime) / 1000;
+                float duration = (currentTime - startTime) / 1000;
                 currentSteps++;
                 stepsView.setText(String.valueOf(currentSteps));
 
                 currentKilometers = (currentSteps * stepLength) / 100000;
                 int progress = (int) (100 * currentKilometers / goal);
-                Log.i("progress", String.valueOf(progress));
                 progressBar.setProgress(progress);
                 kmView.setText(String.format("%.2f", currentKilometers));
 
-                int distance = (int) (currentKilometers * 1000);
+                float distance = (currentKilometers * 1000f);
                 float speed = distance / duration;
 
                 MET = updateMET(speed);
-                cal = MET * user.getWeight() * (float) duration / 3600;
-                if(cal > 0)
-                    calView.setText(Integer.toString((int) cal));
+                cal = MET * user.getWeight() * duration / 3600f;
+
+                calView.setText(Integer.toString((int) cal));
             }
         }
     }
 
     private float updateMET(float speed) {
-        float currentMET = 1;
+        float currentMET = 3;
         if (speed >= 1.1 && speed <= 1.6)
             currentMET = 4.3f;
         else if (speed >= 1.7 && speed <= 2)
@@ -251,8 +254,11 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
 
     private float getGoal(){
         float lastKm = user.getWorkouts().get(user.getWorkouts().size() - 1).getKm();
-        float goal = ( lastKm <= 5 ? 5 : lastKm + 0.2f);
-        goal = (goal >= 15 ? 15 : goal);
+        if(lastKm > 0 ) {
+            float goal = (lastKm <= 5 ? 5 : lastKm + 0.2f);
+            goal = (goal >= 15 ? 15 : goal);
+            this.goal = goal;
+        }
         return goal;
     }
 
