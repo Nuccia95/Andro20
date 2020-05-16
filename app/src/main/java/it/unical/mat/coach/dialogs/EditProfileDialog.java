@@ -1,4 +1,4 @@
-package it.unical.mat.coach.data;
+package it.unical.mat.coach.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -13,11 +13,12 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import it.unical.mat.coach.R;
 
 
-public class EditDialog extends AppCompatDialogFragment {
+public class EditProfileDialog extends AppCompatDialogFragment {
 
     private EditText editWeight;
     private EditText editHeight;
     private EditText editGender;
+    private EditText editFriendNumber;
     private EditDialogListener listener;
 
     @Override
@@ -30,6 +31,7 @@ public class EditDialog extends AppCompatDialogFragment {
         editWeight = view.findViewById(R.id.edit_weight);
         editHeight = view.findViewById(R.id.edit_height);
         editGender = view.findViewById(R.id.edit_gender);
+        editFriendNumber = view.findViewById(R.id.edit_number);
 
         builder.setView(view)
                 .setTitle("Edit Profile")
@@ -45,7 +47,8 @@ public class EditDialog extends AppCompatDialogFragment {
                         String weight = editWeight.getText().toString();
                         String height = editHeight.getText().toString();
                         String gender = editGender.getText().toString();
-                        listener.applyTexts(weight, height, gender);
+                        String number = editFriendNumber.getText().toString();
+                        listener.applyTexts(weight, height, gender, number);
                     }
                 });
 
@@ -64,7 +67,7 @@ public class EditDialog extends AppCompatDialogFragment {
     }
 
     public interface EditDialogListener {
-        void applyTexts(String weight, String height, String gender);
+        void applyTexts(String weight, String height, String gender, String number);
     }
 
 }

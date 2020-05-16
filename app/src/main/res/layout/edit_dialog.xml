@@ -27,4 +27,12 @@
         android:hint="Gender M or F"
         android:textAlignment="center" />
 
+    <EditText
+        android:id="@+id/edit_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_gender"
+        android:hint="Friend number"
+        android:textAlignment="center" />
+
 </RelativeLayout>

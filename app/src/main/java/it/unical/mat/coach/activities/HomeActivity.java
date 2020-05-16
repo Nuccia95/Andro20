@@ -1,11 +1,12 @@
-package it.unical.mat.coach;
+package it.unical.mat.coach.activities;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
+import it.unical.mat.coach.R;
 import it.unical.mat.coach.data.Database;
-import it.unical.mat.coach.data.GetNearbyPlacesData;
-import it.unical.mat.coach.data.ReminderBroadcast;
+import it.unical.mat.coach.utils.NearbyPlacesShower;
+import it.unical.mat.coach.utils.ReminderBroadcast;
 import it.unical.mat.coach.data.User;
 import it.unical.mat.coach.data.Workout;
 
@@ -14,22 +15,23 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -61,9 +63,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -82,8 +85,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageView weatherImageView;
     private Weather weather;
     /* location */
-    private ImageButton parksButton;
-    private ImageButton gymButton;
+    private ImageButton locationButton;
     private FusedLocationProviderClient mFusedLocationClient;
     private String content;
     private GoogleMap gMap;
@@ -91,6 +93,8 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     private String city;
     private TextView cityView;
     private Location currentLocation;
+    private boolean sunny;
+    private ArrayList<String> places;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +114,11 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         weatherView = findViewById(R.id.weather_description);
         humidityView = findViewById(R.id.humidity);
         degreeView = findViewById(R.id.degree);
-        parksButton = findViewById(R.id.parks_button);
-        gymButton = findViewById(R.id.gym_button);
+        locationButton = findViewById(R.id.location_button);
         suggestion = findViewById(R.id.suggestion);
         weatherImageView = findViewById(R.id.weatherpic);
         home_msg.setText("Hi " + user.getName() + "!");
-
+        places = new ArrayList<String>();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLocation();
     }
@@ -174,7 +177,34 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+    /* goTo */
+    private void goToProfile(){
+        Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
+    }
 
+    protected void goToWork() {
+        Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
+        intent.putExtra("email", user.getEmail());
+        startActivity(intent);
+    }
+
+    private void signOut() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+    }
+
+    /* notification */
     private void createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             CharSequence name = "1ReminderChannel";
@@ -197,14 +227,13 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     private void scheduleAlarm(int dayOfWeek) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-        calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.HOUR_OF_DAY, 9);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         // Check we aren't setting it in the past which would trigger it to fire instantly
         if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 7);
         }
-        Log.i("difference",  String.valueOf(calendar.getTimeInMillis() - System.currentTimeMillis()) );
         // Set this to whatever you were planning to do at the given time
         Intent intent = new Intent(this, ReminderBroadcast.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
@@ -212,33 +241,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
-    private void signOut() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-    }
-
-    private void goToProfile(){
-        Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
-        intent.putExtra("user", user);
-        Log.i("worksize", ""+user.getWorkouts().size());
-        startActivity(intent);
-    }
-
-    protected void goToWork() {
-        Intent intent = new Intent(HomeActivity.this, WorkActivity.class);
-        intent.putExtra("email", user.getEmail());
-        startActivity(intent);
-    }
-
+    /* location */
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -296,31 +299,21 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 10));
         gMap.addMarker(markerOptions);
 
-        parksButton.setOnClickListener(new View.OnClickListener() {
+        locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gMap.clear();
-                String url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), "park");
+                String url;
+                    Log.i("sunny", String.valueOf(isSunny()));
+                if(isSunny()) {
+                    url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), "park");
+                }else {
+                    url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), "gym");
+                }
                 Object[] DataTransfer = new Object[2];
                 DataTransfer[0] = gMap;
                 DataTransfer[1] = url;
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(DataTransfer);
-                Toast.makeText(getApplicationContext(),"Nearby Parks", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        gymButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gMap.clear();
-                String url = getUrl(currentLocation.getLatitude(), currentLocation.getLongitude(), "gym");
-                Object[] DataTransfer = new Object[2];
-                DataTransfer[0] = gMap;
-                DataTransfer[1] = url;
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(DataTransfer);
-                Toast.makeText(getApplicationContext(),"Nearby Gyms", Toast.LENGTH_SHORT).show();
+                NearbyPlacesShower nearbyPlacesShower = new NearbyPlacesShower();
+                nearbyPlacesShower.execute(DataTransfer);
             }
         });
     }
@@ -346,6 +339,16 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public ArrayList getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(ArrayList places) {
+        this.places = places;
+    }
+
+
+    /* weather */
     protected void updateWeatherStatus(JSONObject jsonObject) {
         //weatherData is an array
         String weatherData = "";
@@ -381,11 +384,23 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
 
     public  void setSuggestion(String description){
         Log.i("description", description);
-        if(description.equals("clear sky") || description.equals("few clouds") || description.equals("scattered clouds"))
+        if(description.contains("clear sky") || description.contains("clouds")){
             suggestion.setText("According to the weather today\n is better to go to a park!");
-        else if(description.equals("shower rain") || description.equals("rain") || description.equals("thunderstorm") ||
-                description.equals("snow") || description.equals("mist"))
+            setSunny(true);
+        }
+        else if(description.contains("rain") || description.contains("thunderstorm") ||
+                description.contains("snow") || description.contains("mist") || description.contains("drizzle")){
             suggestion.setText("According to the weather today\n is better to go to the gym!");
+            setSunny(false);
+        }
+    }
+
+    public boolean isSunny() {
+        return sunny;
+    }
+
+    public void setSunny(boolean sunny) {
+        this.sunny = sunny;
     }
 
     class Weather extends AsyncTask<String, Void, String> {

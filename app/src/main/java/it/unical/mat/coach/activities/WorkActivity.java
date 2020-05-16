@@ -1,22 +1,28 @@
-package it.unical.mat.coach;
+package it.unical.mat.coach.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import it.unical.mat.coach.R;
 import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.User;
 import it.unical.mat.coach.data.Workout;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -46,6 +52,8 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     private TextView goalView;
     private ImageButton startButton;
     private ImageButton stopButton;
+    private Button callButton;
+    private static final int REQUEST_CALL = 1;
 
     private Chronometer chronometer;
     private ProgressBar progressBar;
@@ -114,6 +122,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
         goalView = findViewById(R.id.goal_view);
         startButton = findViewById(R.id.start_button);
         stopButton = findViewById(R.id.stop_button);
+        callButton = findViewById(R.id.emergency_call);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,11 +146,18 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
                 stepsView.setText("Steps");
                 calView.setText("Cal");
                 kmView.setText("Kilometers");
+                progressBar.setProgress(0);
                 cal = 0;
                 currentKilometers = 0;
                 currentSteps = 0;
                 Toast.makeText(getApplicationContext(), "Workout Added", Toast.LENGTH_SHORT).show();
                 goToHome();
+            }
+        });
+        callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makePhoneCall();
             }
         });
         /* sensors */
@@ -180,7 +196,7 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Intent intent = new Intent(WorkActivity.this, MainActivity.class);
+                        Intent intent = new Intent(WorkActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -265,4 +281,32 @@ public class WorkActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+
+    private void makePhoneCall() {
+        String number = user.getFriend_number();
+        if (number.trim().length() > 0) {
+            if (ContextCompat.checkSelfPermission(WorkActivity.this,
+                    Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(WorkActivity.this,
+                        new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+            } else {
+                String dial = "tel:" + number;
+                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+            }
+        } else {
+            Toast.makeText(WorkActivity.this, "Enter Phone Number", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CALL) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                makePhoneCall();
+            } else {
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }

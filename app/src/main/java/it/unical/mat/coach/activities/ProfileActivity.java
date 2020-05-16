@@ -1,14 +1,18 @@
-package it.unical.mat.coach;
+package it.unical.mat.coach.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import it.unical.mat.coach.R;
 import it.unical.mat.coach.data.Database;
-import it.unical.mat.coach.data.DaysDialog;
-import it.unical.mat.coach.data.EditDialog;
+import it.unical.mat.coach.dialogs.EditDaysDialog;
+import it.unical.mat.coach.dialogs.EditProfileDialog;
 import it.unical.mat.coach.data.User;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +21,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -30,21 +41,21 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.EventListener;
 
-public class ProfileActivity extends AppCompatActivity implements EditDialog.EditDialogListener, DaysDialog.EditDialogListener{
+public class ProfileActivity extends AppCompatActivity implements EditProfileDialog.EditDialogListener, EditDaysDialog.EditDialogListener{
 
     BottomNavigationView bottomNavigationView;
-
     /* user info */
     private TextView nameView;
     private TextView weightView;
     private TextView heightView;
     private TextView genderView;
+    private TextView numberView;
     private ImageButton edit_button;
     private ImageButton days_button;
     private ImageView picView;
@@ -55,6 +66,12 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
     private ArrayList barEntries;
     private ArrayList<String> labels;
     private User user;
+
+    /* share facebook post */
+    private ImageButton share_button;
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
+    private Target target;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,12 +97,62 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
             }
         });
 
+        /* facebook */
+        callbackManager = CallbackManager.Factory.create();
+        share_button = findViewById(R.id.share_button);
+        shareDialog = new ShareDialog(this);
+        target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                SharePhoto sharePhoto = new SharePhoto.Builder().setBitmap(bitmap).build();
+                if(shareDialog.canShow(SharePhotoContent.class)){
+                    SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(sharePhoto).build();
+                    shareDialog.show(content);
+                }
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+
+        share_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Picasso.get()
+                        .load(R.drawable.post)
+                        .into(target);
+
+                shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        Toast.makeText(ProfileActivity.this, "You shared a post", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(ProfileActivity.this, "Canceled", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onError(FacebookException error) {
+                        Toast.makeText(ProfileActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
         /* user info*/
         user = (User) getIntent().getSerializableExtra("user");
         nameView = findViewById(R.id.name_view);
         weightView = findViewById(R.id.weight_number);
         heightView = findViewById(R.id.height_number);
         genderView = findViewById(R.id.gender_value);
+        numberView = findViewById(R.id.friend_number_value);
         picView = findViewById(R.id.profile_picture);
         if(user.getPic() != null)
             Picasso.get().load(user.getPic()).into(picView);
@@ -93,8 +160,15 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         weightView.setText(String.valueOf(user.getWeight()));
         heightView.setText(String.valueOf(user.getHeight()));
         genderView.setText(user.getGender());
+        numberView.setText(user.getFriend_number());
         barChart = findViewById(R.id.BarChart);
         setBarChart();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private void handleMenu(){
@@ -121,6 +195,34 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         });
     }
 
+    protected void goToWork(){
+        Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
+        intent.putExtra("email", user.getEmail());
+        startActivity(intent);
+        finish();
+    }
+
+    protected void goToHome(){
+        Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void signOut(){
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+    }
+
+    /* bar chart */
     private void setBarChart(){
         getEntries();
         barDataSet = new BarDataSet(barEntries, "");
@@ -169,46 +271,18 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
        }
     }
 
-    private void signOut(){
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-    }
-
-    protected void goToWork(){
-        Intent intent = new Intent(ProfileActivity.this, WorkActivity.class);
-        intent.putExtra("email", user.getEmail());
-        startActivity(intent);
-        finish();
-    }
-
-    protected void goToHome(){
-        Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     public void openEditDialog() {
-        EditDialog editDialog = new EditDialog();
+        EditProfileDialog editDialog = new EditProfileDialog();
         editDialog.show(getSupportFragmentManager(), "edit dialog");
     }
 
     public void openWorkoutDaysDialog(){
-        DaysDialog daysDialog = new DaysDialog();
+        EditDaysDialog daysDialog = new EditDaysDialog();
         daysDialog.show(getSupportFragmentManager(), "workout days dialog");
     }
 
-
     @Override
-    public void applyTexts(String weight, String height, String gender) {
+    public void applyTexts(String weight, String height, String gender, String number) {
         if(!weight.matches("")){
             weightView.setText(weight);
             user.setWeight(Integer.parseInt(weight));
@@ -221,6 +295,11 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
             genderView.setText(gender);
             user.setGender(gender);
         }
+        if(!user.getFriend_number().matches("")){
+            numberView.setText(number);
+            user.setFriend_number(number);
+        }
+
         Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
         Toast.makeText(getApplicationContext(),"Info Updated", Toast.LENGTH_SHORT).show();
     }
@@ -261,4 +340,5 @@ public class ProfileActivity extends AppCompatActivity implements EditDialog.Edi
         Database.getDatabase().getReference("users").child(user.getEmail()).setValue(user);
         Toast.makeText(getApplicationContext(),"Days Updated", Toast.LENGTH_SHORT).show();
     }
+
 }

@@ -1,7 +1,8 @@
-package it.unical.mat.coach;
+package it.unical.mat.coach.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import it.unical.mat.coach.R;
 import it.unical.mat.coach.data.Database;
 import it.unical.mat.coach.data.User;
 import it.unical.mat.coach.data.Workout;
@@ -25,10 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private FirebaseDatabase db;
     private  GoogleSignInClient mGoogleSignInClient;
@@ -59,11 +59,6 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
     }
 
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, CODE);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -72,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, CODE);
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -88,9 +88,11 @@ public class MainActivity extends AppCompatActivity {
                         user = new User();
                         user.setEmail(key);
                         user.setName(account.getDisplayName());
+                        /* default info for test */
                         user.setWeight(50);
                         user.setHeight(160);
-                        user.setGender("M");
+                        user.setGender("F");
+                        user.setFriend_number("3291698240");
                         Date d1 = new Date(2020, 4, 3);
                         Date d2 = new Date(2020, 4, 5);
                         Date d3 = new Date(2020, 4, 7);
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         user.setWorkoutDays(workoutDays);
                         usersReference.child(key).setValue(user);
                     }
-                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     intent.putExtra("user", user);
                     startActivity(intent);
                     finish();

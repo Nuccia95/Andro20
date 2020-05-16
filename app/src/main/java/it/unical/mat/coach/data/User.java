@@ -11,6 +11,7 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String gender;
+    private String friend_number;
     private int weight;
     private int height;
     private String pic;
@@ -86,4 +87,8 @@ public class User implements Serializable {
     public void setWorkoutDays(List<Integer> workoutDays) {
         this.workoutDays = workoutDays;
     }
+
+    public String getFriend_number() { return friend_number; }
+
+    public void setFriend_number(String friend_number) {  this.friend_number = friend_number; }
 }

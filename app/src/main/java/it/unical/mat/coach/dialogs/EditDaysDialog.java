@@ -1,22 +1,18 @@
-package it.unical.mat.coach.data;
+package it.unical.mat.coach.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-
-import java.util.ArrayList;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import it.unical.mat.coach.R;
 
-public class DaysDialog extends AppCompatDialogFragment {
+public class EditDaysDialog extends AppCompatDialogFragment {
 
-    private DaysDialog.EditDialogListener listener;
+    private EditDaysDialog.EditDialogListener listener;
     String[] days;
     boolean[] checkedDays;
 
@@ -58,7 +54,7 @@ public class DaysDialog extends AppCompatDialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (DaysDialog.EditDialogListener) context;
+            listener = (EditDaysDialog.EditDialogListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
                     "must implement DaysDialogListener");
