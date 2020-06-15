@@ -48,7 +48,7 @@ public class EditProfileDialog extends AppCompatDialogFragment {
                         String height = editHeight.getText().toString();
                         String gender = editGender.getText().toString();
                         String number = editFriendNumber.getText().toString();
-                        listener.applyTexts(weight, height, gender, number);
+                        listener.setProfileInfo(weight, height, gender, number);
                     }
                 });
 
@@ -67,7 +67,7 @@ public class EditProfileDialog extends AppCompatDialogFragment {
     }
 
     public interface EditDialogListener {
-        void applyTexts(String weight, String height, String gender, String number);
+        void setProfileInfo(String weight, String height, String gender, String number);
     }
 
 }

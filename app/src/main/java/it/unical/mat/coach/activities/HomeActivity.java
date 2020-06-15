@@ -74,9 +74,11 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
 
     BottomNavigationView bottomNavigationView;
     private TextView home_msg;
+
     /* user */
     private User user;
     private static final int REQUEST_CODE = 101;
+
     /* weather */
     private TextView weatherView;
     private TextView humidityView;
@@ -84,6 +86,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView suggestion;
     private ImageView weatherImageView;
     private Weather weather;
+
     /* location */
     private ImageButton locationButton;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -230,11 +233,9 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
         calendar.set(Calendar.HOUR_OF_DAY, 9);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        // Check we aren't setting it in the past which would trigger it to fire instantly
         if(calendar.getTimeInMillis() < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 7);
         }
-        // Set this to whatever you were planning to do at the given time
         Intent intent = new Intent(this, ReminderBroadcast.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -287,6 +288,7 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             }
+
         });
     }
 
@@ -346,7 +348,6 @@ public class HomeActivity extends FragmentActivity implements OnMapReadyCallback
     public void setPlaces(ArrayList places) {
         this.places = places;
     }
-
 
     /* weather */
     protected void updateWeatherStatus(JSONObject jsonObject) {

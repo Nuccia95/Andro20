@@ -1,6 +1,7 @@
 package it.unical.mat.coach.utils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,6 +32,7 @@ public class NearbyPlacesShower extends AsyncTask<Object, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
+        Log.i("result", result);
         List<HashMap<String, String>> nearbyPlacesList = null;
         DataParser dataParser = new DataParser();
         nearbyPlacesList =  dataParser.parse(result);

@@ -59,6 +59,7 @@ public class ProfileActivity extends AppCompatActivity implements EditProfileDia
     private ImageButton edit_button;
     private ImageButton days_button;
     private ImageView picView;
+
     /* bar chart */
     private BarChart barChart;
     private BarData barData;
@@ -110,18 +111,15 @@ public class ProfileActivity extends AppCompatActivity implements EditProfileDia
                     shareDialog.show(content);
                 }
             }
-
             @Override
             public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
             }
-
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-
             }
         };
 
+        /* share post of facebook */
         share_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,6 +159,8 @@ public class ProfileActivity extends AppCompatActivity implements EditProfileDia
         heightView.setText(String.valueOf(user.getHeight()));
         genderView.setText(user.getGender());
         numberView.setText(user.getFriend_number());
+
+        /*bar chart*/
         barChart = findViewById(R.id.BarChart);
         setBarChart();
     }
@@ -282,7 +282,7 @@ public class ProfileActivity extends AppCompatActivity implements EditProfileDia
     }
 
     @Override
-    public void applyTexts(String weight, String height, String gender, String number) {
+    public void setProfileInfo(String weight, String height, String gender, String number) {
         if(!weight.matches("")){
             weightView.setText(weight);
             user.setWeight(Integer.parseInt(weight));
